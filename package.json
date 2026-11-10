@@ -1,0 +1,8 @@
+{
+  "name": "scpsl-auth-qr-manager",
+  "private": true,
+  "type": "module",
+  "scripts": { "build": "node scripts/build.mjs", "test": "node --test tests/*.test.mjs" },
+  "dependencies": { "zxing-wasm": "3.1.6" },
+  "devDependencies": { "esbuild": "0.28.2" }
+}

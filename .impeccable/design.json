@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-10T00:00:00+08:00",
+  "title": "SCP:SL 大二维码管理器",
+  "extensions": {
+    "breakpoints": [
+      { "name": "compact-desktop", "value": "850px" },
+      { "name": "single-column", "value": "680px" }
+    ],
+    "motion": [
+      { "name": "button-state", "value": "160ms", "purpose": "Button background and border transitions" },
+      { "name": "drop-target-state", "value": "180ms", "purpose": "Drop target feedback" }
+    ]
+  },
+  "components": [
+    {
+      "name": "选择图片",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "识别面板的主操作",
+      "html": "<button type=\"button\" class=\"scan-button\">选择图片</button>",
+      "css": ".scan-button { background: #a7edcf; color: #122720; border: 1px solid transparent; min-height: 40px; padding: 8px 14px; border-radius: 8px; font: 650 .9rem/1.55 system-ui, sans-serif; } .scan-button:hover { background: #c2f8e1; } .scan-button:focus-visible { outline: 2px solid #a7edcf; outline-offset: 3px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "夜班证据工作台",
+    "overview": "用深色层次让操作区域清晰可辨，让签名与时效结论在报告中各自可读。",
+    "keyCharacteristics": ["低亮度青黑底色", "薄荷绿主操作", "桌面双列和手机单列"]
+  }
+}

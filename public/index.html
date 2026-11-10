@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#12191b">
+  <meta name="description" content="SCP:SL Remote Admin 大二维码识别、验签和证据整理工作台">
+  <title>大二维码管理器 · SCP:SL</title>
+  <link rel="icon" href="/assets/icon-192.png">
+  <link rel="apple-touch-icon" href="/assets/icon-192.png">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="stylesheet" href="/assets/style.css">
+  <script type="module" src="/assets/app.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="/" aria-label="SCP:SL 大二维码管理器首页">
+        <span class="brand-icon"><svg aria-hidden="true"><use href="/assets/icons.svg#scan"/></svg></span>
+        <span>SCP:SL <span class="brand-divider">/</span> <span class="brand-secondary">Remote Admin</span></span>
+      </a>
+      <div class="top-actions">
+        <span class="connection" id="connection"><span class="connection-dot"></span><span id="connection-text">正在准备离线资源</span></span>
+        <button class="button quiet install" type="button" id="install"><svg aria-hidden="true"><use href="/assets/icons.svg#download"/></svg><span>安装应用</span></button>
+      </div>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="heading" aria-labelledby="title">
+      <div><h1 id="title">大二维码管理器</h1><p>识别举报截图中的认证二维码，核验签名，整理玩家证据。</p></div>
+      <a class="mobile-history" href="#history"><svg aria-hidden="true"><use href="/assets/icons.svg#history"/></svg> 查询记录</a>
+    </section>
+
+    <div class="workspace">
+      <div class="primary-column">
+        <section class="panel intake" aria-labelledby="import-title">
+          <div class="panel-heading">
+            <div class="heading-label"><svg aria-hidden="true"><use href="/assets/icons.svg#scan"/></svg><h2 id="import-title">识别二维码</h2></div>
+            <div class="switcher" aria-label="输入类型">
+              <button id="mode-image" type="button" aria-pressed="true"><svg aria-hidden="true"><use href="/assets/icons.svg#image"/></svg>图片</button>
+              <button id="mode-json" type="button" aria-pressed="false"><svg aria-hidden="true"><use href="/assets/icons.svg#code"/></svg>JSON</button>
+            </div>
+          </div>
+          <div id="image-input">
+            <div class="dropzone" id="dropzone">
+              <svg class="scanner-mark" viewBox="0 0 68 68" fill="none" aria-hidden="true">
+                <path d="M20 7H11a4 4 0 0 0-4 4v9m41-13h9a4 4 0 0 1 4 4v9M20 61h-9a4 4 0 0 1-4-4v-9m41 13h9a4 4 0 0 0 4-4v-9" stroke="currentColor" stroke-width="1.8"/>
+                <path d="M18 18h12v12H18zm20 0h12v12H38zM18 38h12v12H18zm20 0h5v5h-5zm7 7h5v5h-5z" stroke="currentColor" stroke-width="1.6"/>
+                <path d="M4 34h60" stroke="currentColor" stroke-width="1.5"/>
+              </svg>
+              <h3 class="desktop-copy">把截图拖到这里</h3>
+              <h3 class="mobile-copy">导入举报截图</h3>
+              <p>也可选择图片、粘贴截图，或用摄像头扫码</p>
+              <div class="input-actions">
+                <button class="button accent" type="button" id="choose"><svg aria-hidden="true"><use href="/assets/icons.svg#upload"/></svg>选择图片</button>
+                <button class="button secondary" type="button" id="open-camera"><svg aria-hidden="true"><use href="/assets/icons.svg#camera"/></svg>摄像头扫码</button>
+                <button class="button secondary" type="button" id="paste"><svg aria-hidden="true"><use href="/assets/icons.svg#paste"/></svg>粘贴<span class="paste-label">图片</span></button>
+              </div>
+              <input type="file" id="files" accept="image/png,image/jpeg,image/webp,image/bmp,image/gif,image/avif" multiple hidden>
+              <span class="file-hint">PNG、JPEG、WebP 等 · 每张最多 20 MB · 支持批量</span>
+            </div>
+          </div>
+          <form id="json-input" hidden>
+            <label for="token-text">扫码得到的原始 JSON</label>
+            <textarea id="token-text" rows="6" spellcheck="false" autocapitalize="off" autocomplete="off" maxlength="20000" placeholder='{"token":"…","signature":"…"}'></textarea>
+            <button class="button accent" type="submit" id="verify-json"><svg aria-hidden="true"><use href="/assets/icons.svg#shield"/></svg>解析并验签</button>
+          </form>
+          <div class="activity" id="activity" role="status" aria-live="polite" hidden></div>
+          <div class="privacy-line"><svg aria-hidden="true"><use href="/assets/icons.svg#lock"/></svg> 图片、摄像头画面和令牌均在本机处理</div>
+        </section>
+
+        <section class="panel results" id="results" aria-labelledby="result-title">
+          <div class="panel-heading">
+            <div class="heading-label"><svg aria-hidden="true"><use href="/assets/icons.svg#shield"/></svg><h2 id="result-title">核验报告</h2></div>
+            <span class="subtle" id="result-id">等待识别</span>
+          </div>
+          <div id="report" class="report" aria-live="polite">
+            <div class="report-empty"><span class="empty-icon"><svg aria-hidden="true"><use href="/assets/icons.svg#shield"/></svg></span><div><h3>还没有核验报告</h3><p>导入大二维码后，这里会分别显示签名和认证时效。</p></div></div>
+          </div>
+        </section>
+      </div>
+
+      <aside class="panel history" id="history" aria-labelledby="history-title">
+        <div class="panel-heading">
+          <div class="heading-label"><svg aria-hidden="true"><use href="/assets/icons.svg#history"/></svg><h2 id="history-title">查询记录</h2><span class="count" id="history-count">0</span></div>
+          <button class="icon-button" id="clear-history" type="button" aria-label="清空查询记录" title="清空查询记录" disabled><svg aria-hidden="true"><use href="/assets/icons.svg#trash"/></svg></button>
+        </div>
+        <div class="history-tools">
+          <label class="search"><svg aria-hidden="true"><use href="/assets/icons.svg#search"/></svg><input type="search" id="history-search" aria-label="搜索查询记录" placeholder="搜索昵称、账号、序列号…"></label>
+          <label class="sr-only" for="history-filter">筛选签名状态</label>
+          <select id="history-filter"><option value="">全部签名状态</option><option value="verified">签名通过</option><option value="other">待确认</option></select>
+        </div>
+        <div id="history-list" class="history-list">
+          <div class="history-empty"><svg aria-hidden="true"><use href="/assets/icons.svg#history"/></svg><h3>暂无查询记录</h3><p>识别后自动保存到此浏览器。</p></div>
+        </div>
+        <div class="history-footer"><svg aria-hidden="true"><use href="/assets/icons.svg#lock"/></svg> 仅此浏览器可见 · 最多保留 80 条</div>
+      </aside>
+    </div>
+
+    <footer class="footer">
+      <span>面向 SCP:SL 服管 · 独立工具</span>
+      <div><span id="key-status" aria-live="polite">正在加载可信公钥</span><button class="text-button" type="button" id="sync-keys">同步公钥</button></div>
+    </footer>
+  </main>
+
+  <dialog id="camera-dialog" class="dialog camera-dialog" aria-labelledby="camera-title">
+    <div class="dialog-heading"><h2 id="camera-title">摄像头扫码</h2><button class="icon-button" type="button" data-close="camera-dialog" aria-label="关闭摄像头"><svg aria-hidden="true"><use href="/assets/icons.svg#close"/></svg></button></div>
+    <div class="camera-frame">
+      <video id="camera-video" autoplay playsinline muted aria-label="摄像头预览"></video>
+      <div class="camera-guide" aria-hidden="true"></div>
+    </div>
+    <p id="camera-status" role="status">请将大二维码完整对准取景框。</p>
+  </dialog>
+  <dialog id="install-dialog" class="dialog" aria-labelledby="install-title">
+    <div class="dialog-heading"><h2 id="install-title">安装并离线使用</h2><button class="icon-button" type="button" data-close="install-dialog" aria-label="关闭安装说明"><svg aria-hidden="true"><use href="/assets/icons.svg#close"/></svg></button></div>
+    <p>首次在线打开页面并等到顶部显示「可离线使用」。之后可以断网重新打开。</p>
+    <ul><li>在 Chrome 或 Edge 的浏览器菜单中选择安装应用或添加到主屏幕。</li><li>在 iPhone 或 iPad 的 Safari 分享菜单中选择添加到主屏幕。</li></ul>
+    <p>离线时会使用内置和已同步的签名公钥。可在联网时手动同步最新公钥。</p>
+  </dialog>
+  <dialog id="clear-dialog" class="dialog" aria-labelledby="clear-title">
+    <div class="dialog-heading"><h2 id="clear-title">清空本机查询记录</h2><button class="icon-button" type="button" data-close="clear-dialog" aria-label="取消"><svg aria-hidden="true"><use href="/assets/icons.svg#close"/></svg></button></div>
+    <p>此浏览器中的令牌记录和备注都会被删除。</p>
+    <div class="dialog-actions"><button class="button secondary" type="button" data-close="clear-dialog">取消</button><button class="button danger" id="confirm-clear" type="button">清空记录</button></div>
+  </dialog>
+  <div id="toast" class="toast" role="status" hidden></div>
+  <noscript>请启用 JavaScript 来识别二维码和执行本机验签。</noscript>
+</body>
+</html>

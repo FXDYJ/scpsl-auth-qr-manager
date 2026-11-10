@@ -1,0 +1,19 @@
+services:
+  web:
+    image: ghcr.io/fxdyj/scpsl-auth-qr-manager:${QR_IMAGE_TAG:-latest}
+    ports:
+      - "${QR_BIND_ADDRESS:-127.0.0.1}:${QR_PORT:-8784}:8080"
+    depends_on:
+      - php
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+  php:
+    image: ghcr.io/fxdyj/scpsl-auth-qr-manager-php:${QR_IMAGE_TAG:-latest}
+    volumes:
+      - signing-keys:/var/cache/auth-qr
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+volumes:
+  signing-keys:
