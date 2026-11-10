@@ -83,10 +83,11 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Test published Compose stack
+        shell: bash
         run: |
           docker compose -f compose.ghcr.yaml up -d
-          curl -fsS --retry 8 --retry-connrefused http://127.0.0.1:8784/ -o /dev/null
-          curl -fsS http://127.0.0.1:8784/api/keys.php | jq -e '.documents | length > 0'
+          curl -fsS --retry 8 --retry-all-errors --retry-delay 1 --max-time 10 http://127.0.0.1:8784/ -o /dev/null
+          curl -fsS --retry 8 --retry-all-errors --retry-delay 1 --max-time 10 http://127.0.0.1:8784/api/keys.php | jq -e '.documents | length > 0'
           curl -fsS http://127.0.0.1:8784/manifest.webmanifest | jq -e '.display == "standalone"'
           curl -fsS http://127.0.0.1:8784/sw.js -o /dev/null
           curl -fsS http://127.0.0.1:8784/vendor/zxing_reader.wasm -o /dev/null
